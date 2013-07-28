@@ -20,10 +20,10 @@ do
     PASA_FILE=Sb_${PASA_DATE}_chr${i}_pasa.gtf
 
     PRD1_PATH=.
-    PRD1_FILE=augustus_chr${i}.gtf
+    PRD1_FILE=augustus_chr${i}.gtf.clean
 
     PRD2_PATH=.
-    PRD2_FILE=myop_chr${i}.gtf
+    PRD2_FILE=myop_chr${i}.gtf.clean
 
     cd CHR_${i} # Gets into the chromossomes dir.
     date > sgeval_${DATE}_chr${i}.date
@@ -32,18 +32,19 @@ do
     OUTDIR=sgeval_${DATE}_chr${i}
     mkdir -p ${OUTDIR}
     
-    $(sgeval.pl -o ${OUTDIR} \
+    nice sgeval.pl -o ${OUTDIR} \
         -g ${PASA_PATH}/${PASA_FILE} \
         ${PRD1_PATH}/${PRD1_FILE} \
         ${PRD2_PATH}/${PRD2_FILE} \
         1> ${OUTDIR}/sgeval_analysis_${DATE}.log \
-        2> ${OUTDIR}/sgeval_analysis_${DATE}.err \
-        && date >> sgeval_${DATE}_chr${i}.date &)
+        2> ${OUTDIR}/sgeval_analysis_${DATE}.err &
     RES=$?
 
     # Error message
     if [ "$RES" -ne "0" ]; 
         then echoerr "Problems while running SGEval"
+    else
+        date >> sgeval_${DATE}_chr${i}.date
     fi
     
     # Ends creating the output dir

@@ -26,12 +26,12 @@ mkdir -p ${OUTDIR}
 echolog "Running sgeval for all chrs together"
 
 # Runs SGEval for 2 predictors (MYOP and AUGUSTUS)
-$(sgeval.pl -o ${OUTDIR} \
+nice sgeval.pl -o ${OUTDIR} \
     -g ${PASA_PATH}/${PASA_FILE} \
     ${PRD1_PATH}/${PRD1_FILE} \
     ${PRD2_PATH}/${PRD2_FILE} \
     1> ${OUTDIR}/sgeval_analysis_${DATE}.log \
-    2> ${OUTDIR}/sgeval_analysis_${DATE}.err)
+    2> ${OUTDIR}/sgeval_analysis_${DATE}.err
 RES=$?
 
 # Error message

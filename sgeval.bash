@@ -14,16 +14,16 @@ date > sgeval.date
 echolog "Running sgeval for each chromossome alone"
 
 # Runs SGEval for 2 predictors (MYOP and AUGUSTUS)
-for i in $(seq -f %02.0f 6 10); 
+for i in $(seq -f %02.0f 1 5); 
 do
     PASA_PATH=.
     PASA_FILE=Sb_${PASA_DATE}_chr${i}_pasa.gtf
 
     PRD1_PATH=.
-    PRD1_FILE=augustus_chr${i}.gtf.clean
+    PRD1_FILE=augustus_chr${i}.gtf.clean.new
 
     PRD2_PATH=.
-    PRD2_FILE=myop_chr${i}.gtf.clean
+    PRD2_FILE=myop_chr${i}.gtf.clean.new
 
     cd CHR_${i} # Gets into the chromossomes dir.
     date > sgeval_${DATE}_chr${i}.date

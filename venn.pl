@@ -20,13 +20,14 @@ foreach my $file (@ARGV)
         # Splitting the sentence in 2 parts: groups and numbers
         my ($key, $number) = split("\t", $exp); 
         
-        # Editing keys for making them more 'readable'
-        $key =~ s/\_chr\d\d//g;
-        $key =~ s/\.clean//g;
-        $key =~ s/Sb.*pasa/pasa/g;
-        
         # Splits fields and sort them
         my @fields = split(/\|/, $key);
+        foreach my $field (@fields)
+        {
+            $field =~ s/\_chr\d\d//g;
+            $field =~ s/\.clean//g;
+            $field =~ s/Sb.*pasa/pasa/;
+        }
         $key = join("|",sort(@fields));
         
         # Stores in the hash

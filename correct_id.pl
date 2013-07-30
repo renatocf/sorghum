@@ -34,7 +34,7 @@ foreach my $file (@ARGV)
          my $attribute) = split("\t",$line);
         
         $attribute = "gene_id \"$pred.t$j.g$i\"; "
-                   . "transcript_id \"$pred.t$j\";\n";
+                   . "transcript_id \"$pred.t$j.g$i\";\n";
         
         print OUT join("\t", $seqname, $source, $feature,
                              $start, $end, $score, 

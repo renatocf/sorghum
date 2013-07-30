@@ -25,7 +25,7 @@ foreach my $file (@ARGV)
         foreach my $field (@fields)
         {
             $field =~ s/\_chr\d\d//g;
-            $field =~ s/\.clean//g;
+            $field =~ s/\.clean\..*//g;
             $field =~ s/Sb.*pasa/pasa/;
         }
         $key = join("|",sort(@fields));

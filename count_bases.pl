@@ -7,13 +7,20 @@ my %nucleotides = ();
 my $pred_msize = 0;
 my $nucl_msize = 0;
 
-my $total = 0;
 foreach my $file (@ARGV)
 {
+    my %first = (); 
+    my %last = (); 
+    
     open(FILE, "<", $file);
     
-    $file =~ s/CHR_\d\d\///g;
+    # Takes out from the names directory 
+    # path and digits informations
+    $file =~ s/.*CHR_\d\d\///g;
     $file =~ s/_chr\d\d.*//g;
+    
+    # Save the length of the file names 
+    # to print them in a better format later
     my $s = length $file;
     ($s > $pred_msize) ? ($pred_msize = $s) : ();
     
@@ -32,12 +39,20 @@ foreach my $file (@ARGV)
             # DEBUG: Print statr and end
             print STDERR "start=>$start, end=>$end\n"; 
             
-            if ($start >= $end) {
-                $nucleotides{$file} += $start - $end + 1;
+            # Do not sum if the sequence is repeated
+            unless(exists($first{$start}) and exists($last{$end}))
+            {
+                if ($start >= $end) {
+                    $nucleotides{$file} += $start - $end + 1;
+                }
+                else {
+                    $nucleotides{$file} += $end - $start + 1;
+                }
             }
-            else {
-                $nucleotides{$file} += $end - $start + 1;
-            }
+            
+            # Saving both references in the hashes
+            $first{$start} = 1;
+            $last{$end} = 1;
         } # if
     } # while
     close FILE;

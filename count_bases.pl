@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+use v5.10;
 
 use strict;
 use warnings;
@@ -7,7 +8,7 @@ my %nucleotides = ();
 my $pred_msize = 0;
 my $nucl_msize = 0;
 
-foreach my $file (@ARGV)
+for my $file (@ARGV)
 {
     my %first = (); 
     my %last = (); 
@@ -59,7 +60,7 @@ foreach my $file (@ARGV)
 }
 
 # Process all numbers in a more legible format
-foreach my $pred (keys %nucleotides)
+for my $pred (keys %nucleotides)
 {
     # Creates an array with the numeric part of the sentence.
     # The aim is to make more legible numbers
@@ -85,7 +86,7 @@ foreach my $pred (keys %nucleotides)
     ($s > $nucl_msize) ? ($nucl_msize = $s) : ();
 }
 
-foreach my $pred (sort keys %nucleotides) {
+for my $pred (sort keys %nucleotides) {
     printf "%-*s TOTAL BASES = %*s\n", $pred_msize, $pred, 
                                        $nucl_msize, $nucleotides{$pred};
 }

@@ -15,26 +15,28 @@ use strict;
 use warnings;
 use Getopt::Long;
     
-my $usage_message = 
-    "USAGE: create_map.pl [-h] < fasta_file > map_file \n".
-    "Type --help for further information.\n";
-my $help_message = 
-    "create_map by Renato Cordeiro Ferreira\n".
-    "\n".
-    "This program gets a .fa/.fasta file masked with 'X' and\n".
-    "creates a '.map' file (own format) which can be used to\n".
-    "verify the existence of predictions inside the masked \n".
-    "regions.\n".
-    "\n".
-    "* file.map\n".
-    "-----------------------------\n".
-    "The output file has as name 'file.map'. Each header in the\n".
-    "fasta is counted and printed in the output. Besides this, \n".
-    "each line represents a masked region, in the format BN-EN\n".
-    "(begin_nucleotide-end_nucleotide)\n".
-    "\n".
-    "USAGE: create_mask_map.pl [-h] <fasta_file>".
-    "Type --help for more information.\n";
+my $usage_message = << "USAGE"
+    USAGE: create_map.pl [-h] < fasta_file > map_file
+    Type --help for further information.
+USAGE
+
+my $help_message = << "HELP"
+    create_map by Renato Cordeiro Ferreira
+    
+    This program gets a .fa/.fasta file masked with 'X' and
+    creates a '.map' file (own format) which can be used to
+    verify the existence of predictions inside the masked 
+    regions.
+    
+    * file.map
+    -----------------------------
+    The output file has as name 'file.map'. Each header in the
+    fasta is counted and printed in the output. Besides this, 
+    each line represents a masked region, in the format BN-EN
+    (begin_nucleotide-end_nucleotide)
+    
+    USAGE: create_mask_map.pl [-h] <fasta_file>
+HELP
 
 # Options
 Getopt::Long::Configure('bundling');

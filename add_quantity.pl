@@ -21,7 +21,7 @@ if(scalar(@ARGV) != 3) {
     die "Usage: add_quantity.pl <predictor> <.gtf> <quantity>";
 }
 
-## VARIABLES ##########################################################
+## GLOBAL VARIABLES ###################################################
 my $predictor = shift @ARGV;
 my $gene_file = shift @ARGV;
 my $quantity = shift @ARGV;

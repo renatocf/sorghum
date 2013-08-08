@@ -1,13 +1,27 @@
 #!/usr/bin/perl
+use v5.10;
 
+#######################################################################
+# Program:    add_quantity.pl                                         #
+# mantainer:  Renato Cordeiro Ferreira                                #
+# usage:      This program gets a .gtf file and adds to the 'start'   #
+#             and 'end' fields of each line a quanty passed as an     #
+#             argument. Also requiser the predictor name and .gtf     #
+#             file name.                                              #
+# date:       25/07/13 (dd/mm/yy)                                     #
+#######################################################################
+
+# Pragmas
 use warnings;
 use strict;
 use bigint;
 
+# Usage
 if(scalar(@ARGV) != 3) {
-    die "Usage: change_prefix.pl <predictor> <.gtf> <quantity>";
+    die "Usage: add_quantity.pl <predictor> <.gtf> <quantity>";
 }
 
+## VARIABLES ##########################################################
 my $predictor = shift @ARGV;
 my $gene_file = shift @ARGV;
 my $quantity = shift @ARGV;
@@ -16,37 +30,38 @@ my $myop_delim = "\n\n";
 my $pasa_delim = "\n\n";
 my $augustus_delim = "\n###\n";
 
-#
-# first we need the correct read delimiter
-#
+## SCRIPT #############################################################
+# First we need the correct read delimiter
 my $old_delim = $/;
-if ($predictor =~ m/myop/i){
-    $/ = $myop_delim;
-}
-elsif ($predictor =~ m/pasa/i){
-    $/ = $pasa_delim;
-}
-elsif ($predictor =~ m/augustus/i){
-    $/ = $augustus_delim;
-}
-else {
-    die "gene predictor name not recognized (should be 'augustus' or 'myop'):$predictor\n";
+given ($predictor)
+{
+    when (m/myop/i)     { $/ = $myop_delim; }
+    when (m/pasa/i)     { $/ = $pasa_delim; }
+    when (m/augustus/i) { $/ = $augustus_delim; }
+    default 
+    {
+        die "gene predictor name not recognized",
+            "(should be 'augustus' or 'myop'):$predictor\n";
+    }
 }
 
 open(GENE, "<", $gene_file);
-while(my $gene = <GENE>) {
-    chomp;
+while(my $gene = <GENE>) 
+{
+    # Takes out \n from each line
+    chomp $gene;
     
     my @lines = split("\n", $gene);
-    foreach my $line (@lines) {
-        if($line =~ m/^\s*\#/) { 
-            next; 
-        }
-        elsif($line =~ m/^\s*$/) {
-            print "$line\n";
-            next;
+    LINES: for my $line (@lines) 
+    {
+        given($line)
+        {
+            # Ignore comments and blank lines
+            when(m/^\s*\#/) { next LINES; }
+            when(m/^\s*$/)  { print "$line\n"; next LINES; }
         }
         
+        # Split .gtf line in its fields
         (my $seqname, 
          my $source, 
          my $feature, 
@@ -57,19 +72,15 @@ while(my $gene = <GENE>) {
          my $frame, 
          my $attribute) = split("\t",$line);
         
-        print STDERR "DEBUG======>old:$start";
+        # Add quantity to 'start' and 'end'
         $start += $quantity;
-        print STDERR " new: $start<======\n";
-        print STDERR "DEBUG======>old:$end";
         $end += $quantity;
-        print STDERR " new: $end<======\n";
+        
+        # Join lines again and print
         $line = join("\t", $seqname, $source, $feature, $start,
-            $end, $score, $strand, $frame, $attribute);
+                           $end, $score, $strand, $frame, $attribute);
         print "$line\n";
     }
-    print "\n";
+    print "\n"; # Separate blocks with blank lines
 }
 close(GENE);
-
-# print STDERR "DEBUG:=============gene=========\n=>$gene\n----------\n===>start=$comeco\n================\n";
-# return $comeco;

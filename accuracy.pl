@@ -1,8 +1,20 @@
 #!/usr/bin/perl 
+use v5.10;
 
+#######################################################################
+# Program:    accuracy.pl                                             #
+# mantainer:  Renato Cordeiro Ferreira                                #
+# usage:      This program gets the output of venn.pl and calculates  #
+#             some statiscical information about it (TP. TN, FP, FN,  #
+#             accuracy and specificity).
+# date:       25/07/13 (dd/mm/yy)                                     #
+#######################################################################
+
+# Pragmas
 use strict;
 use warnings;
 
+## GLOBAL VARIABLES ###################################################
 my %hash = ();
 my $key_msize = 0;
 my $num_msize = 0;
@@ -10,6 +22,7 @@ my $num_msize = 0;
 my $pasa = 0;
 my $pasa_intron = 0;
 
+## SCRIPT #############################################################
 while(my $line = <>)
 {
     chomp $line; # Takes out \n
@@ -20,20 +33,24 @@ while(my $line = <>)
     $quantity =~ s/\.//g; # Taking out dots
     
     # DEBUG: print the complete sentence
-    print STDERR "SENTENCE ==> $name\n";
+    say STDERR "SENTENCE ==> $name";
     
     my @fields = split(/\|/, $name);
     my $p_exon = 0; my $p_intron = 0;
     
-    if($name =~ m/pasa_intron/) { 
-        $p_intron = 1; 
-        $pasa_intron += $quantity;
-        print STDERR "  pasa intron: +$quantity\n";
-    } 
     if($name =~ m/pasa([^_]|$)/) { 
         $p_exon = 1; 
         $pasa += $quantity;
-        print STDERR "  pasa exon: +$quantity\n";
+        
+        # DEBUG: print pasa exon added quantity
+        say STDERR "  pasa exon: +$quantity";
+    } 
+    elsif($name =~ m/pasa_intron/) { 
+        $p_intron = 1; 
+        $pasa_intron += $quantity;
+        
+        # DEBUG: print pasa_intron added quantity
+        say STDERR "  pasa intron: +$quantity";
     } 
     
     foreach my $field (@fields)
@@ -54,8 +71,8 @@ while(my $line = <>)
             if($p_intron)
             {    
                 # FP: False positive
-                # Everything that is pasa_intron but
-                # was predicted by some predictor
+                # Everything that is pasa_intron, not in pasa
+                # exon, but was predicted by some predictor
                 $hash{$field}{'FP'} += $quantity;
                 print STDERR "    ($field) FP: +$quantity\n";
             }
@@ -88,7 +105,6 @@ foreach my $pred (keys(%hash))
     # were predicted by this predictor - def. of False Positive)
     $hash{$pred}{'TN'} = $pasa_intron - $hash{$pred}{'FP'};
     
-    # print "$pred\n";
     foreach my $key (keys %{$hash{$pred}})
     {
         # Creates an array with the numeric part of the sentence.

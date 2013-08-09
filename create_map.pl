@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+use v5.10;
 
 #######################################################################
 # Program:    create_map.pl                                           #
@@ -10,11 +11,12 @@
 # date:       12/04/13 (dd/mm/yy)                                     #
 #######################################################################
 
-# Libraries
+# Pragmas
 use strict;
 use warnings;
 use Getopt::Long;
     
+## HELP/USAGE #########################################################
 my $usage_message = << "USAGE"
     USAGE: create_map.pl [-h] < fasta_file > map_file
     Type --help for further information.
@@ -50,32 +52,35 @@ if($help) {
     die "\n$usage_message\n";
 }
 
-local $/ = ">"; # Separador dos textos
-my $seq = <>;
+## GLOBAL VARIABLES ###################################################
+local $/ = ">";    # Text separator
 
-while($seq = <>)
+## SCRIPT #############################################################
+my $seq = <STDIN>; # Takes out the first line
+
+LINE: while($seq = <>)
 {
-    # Variables to the text 
+    # Variables for the text 
     my $real_seq = '';
     my $header = '';
     
-    # Variables to positions  
+    # Variables for positions  
     my $position = 0; 
     my $start = 0; 
     my $size = 0;
     
     # Split multiple lines in an array and take
-    # oit the first (whichis part of a header).
+    # out the first (which is part of a header).
     my @linhas = split("\n", $seq);
     $header = shift @linhas;
     
-    # Print header and sequence
+    # Prints header and sequence
     print ">";
     print "$header" if(defined($header)); 
     print "\n";
     
-    # If the last element is '>', take ir out
-    next unless(scalar(@linhas) != 0);
+    # If the last element is '>', take it out
+    next LINE unless(scalar(@linhas) != 0);
     pop @linhas if($linhas[-1] =~ m/\>.*/);
     
     # Create variable with the content of the lines
@@ -83,7 +88,7 @@ while($seq = <>)
     
     # Seraches by masked 'X' (5 at least) and prints
     # a map with the positions of the masked sequences
-    while($real_seq =~ m/XXXXX+/)
+    MASK: while($real_seq =~ m/XXXXX+/)
     {
         # Position of the beginning of the sequence 
         # and its size:

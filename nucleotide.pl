@@ -1,13 +1,26 @@
 #!/usr/bin/perl
+use v5.10;
 
+#######################################################################
+# Program:    nucleotide.pl                                           #
+# mantainer:  Renato Cordeiro Ferreira                                #
+# usage:      This program gets the output of venn.pl and prints      # 
+#             the number of nucleotides predicted by each predictor   #
+#             that is different from pasa.                            #
+# date:       08/08/13 (dd/mm/yy)                                     #
+#######################################################################
+
+# Pragmas
 use strict;
 use warnings;
 
+## GLOBAL VARIABLES ###################################################
 my %hash = ();
 my $key_msize = 0;
 my $num_msize = 0;
 
-while(my $line = <>)
+## SCRIPT #############################################################
+LINE: while(my $line = <>)
 {
     (my $name, my $quantity) = split(/=>/, $line);
     $name =~ s/ //g;      # Taking out spaces
@@ -18,7 +31,7 @@ while(my $line = <>)
     print STDERR "SENTENCE ==> $name\n";
     
     my @fields = split(/\|/, $name);
-    foreach my $field (@fields)
+    FIELD: for my $field (@fields)
     {
         if($field !~ /pasa/ and $field !~ /pasa_intron/)
         {
@@ -36,7 +49,7 @@ while(my $line = <>)
     print STDERR "\n";
 }
 
-foreach my $key (keys(%hash))
+NUM: for my $key (keys(%hash))
 {
     # Creates an array with the numeric part of the sentence.
     # The aim is to make more legible numbers
@@ -62,7 +75,7 @@ foreach my $key (keys(%hash))
     ($s > $num_msize) ? ($num_msize = $s) : ();
 }
 
-foreach my $key (sort keys %hash) 
+PRINT: for my $key (sort keys %hash) 
 {
     # Prints all the keys in the following format:
     # pred nucleotides = 23.543.354.134

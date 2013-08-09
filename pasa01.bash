@@ -2,7 +2,7 @@
 echolog() { echo "$@"; }
 echoerr() { echo "$@" 1>&2; }
 
-## VARIABLES ##########################################################
+## PREAMBLE ###########################################################
 PATH_EST=/home3/renatocf/sorghum/sorghum_data/Sorghum_bicolor.EST
 FILE_EST=Sorghum_bicolor.EST.fa
 

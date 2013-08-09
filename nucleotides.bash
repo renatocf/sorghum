@@ -2,8 +2,10 @@
 echolog() { echo "$@"; } #1>results.txt; }
 echoerr() { echo "$@" 1>&2; }
 
+## PREAMBLE ############################################################
 n_chr=10
 
+## SCRIPT ##############################################################
 echolog "Relatório de nucleotídeos"
 echolog
 
@@ -19,16 +21,15 @@ do
     echolog "CHR_${i}"
     echolog "---------------------------"
     
+    # Relatory about SGEval
     echolog "Somando a partir do SGEval:"
     perl ../venn.pl sgeval_${DATE}_chr${i}/${VENN} \
         | perl ../nucleotide.pl 2> /dev/null
     echolog
     
+    # Relatory about .gtf's
     echolog "Contando CDS:"
     perl ../count_bases.pl ${MYOP} ${AUGUSTUS} 2> /dev/null
     echolog
-    
-    # cat sgeval_2013_07_29_chr${i}/${ACCURACY}
-    # echolog
     cd ..
 done

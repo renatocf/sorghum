@@ -6,14 +6,14 @@ n_chr=10
 species=maize
 
 ## AUGUSTUS ############################################################
-# for i in $(seq -f %02.0f ${n_chr}); 
-# do 
-#     # Run augustus for 'n_chr' chromossomes based on species 'species'
-#     $(date > CHR_${i}/augustus.date \
-#       && augustus --species=$species CHR_${i}/CHR_${i}_RefSeq.fasta \
-#       > CHR_${i}/augustus_chr${i}.gtf 2> CHR_${i}/augustus.err \
-#       && date >> CHR_${i}/augustus.date); 
-# done
+for i in $(seq -f %02.0f ${n_chr}); 
+do 
+    # Run augustus for 'n_chr' chromossomes based on species 'species'
+    $(date > CHR_${i}/augustus.date \
+      && augustus --species=$species CHR_${i}/CHR_${i}_RefSeq.fasta \
+      > CHR_${i}/augustus_chr${i}.gtf 2> CHR_${i}/augustus.err \
+      && date >> CHR_${i}/augustus.date); 
+done
 
 ## REMOVE MAPPED #######################################################
 for i in $(seq -f %02.0f ${n_chr}); 

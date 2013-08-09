@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+use v5.10;
 
 #######################################################################
 # Program:    join_chrs.pl                                            #
@@ -10,23 +11,29 @@
 # date:       08/07/13 (dd/mm/yy)                                     #
 #######################################################################
 
+# Pragmas
 use strict;
 use warnings;
 
+## HELP/USAGE #########################################################
 if(scalar(@ARGV) != 1) {
     die "Usage: join_chrs.pl <predictor>";
 }
 
+## GLOBAL VARIABLES ###################################################
 # Read file of type <name file>:size
 my $init = 0;
 my $predictor = shift(@ARGV);
 system("rm $predictor.gtf");
 
-while (my $line = <>){
+## SCRIPT #############################################################
+LINE: while (my $line = <>)
+{
     chomp($line);
     print $init, "\n";
     (my $file, my $size) = split(":", $line);
-    system("perl add_quantity.pl $predictor $file $init 1>> $predictor.gtf 2>> $predictor.err");
+    system("perl add_quantity.pl $predictor $file $init ".
+           "1>> $predictor.gtf 2>> $predictor.err");
     $init += $size;
 }
 

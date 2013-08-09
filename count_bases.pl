@@ -1,14 +1,25 @@
 #!/usr/bin/perl
 use v5.10;
 
+#######################################################################
+# Program:    count_bases.pl                                          #
+# mantainer:  Renato Cordeiro Ferreira                                #
+# usage:      This program gets .gtf files as arguments and for each  #
+#             one, count the number of nucleotides presented on it.   #
+# date:       08/08/13 (dd/mm/yy)                                     #
+#######################################################################
+
+# Pragmas
 use strict;
 use warnings;
 
+## GLOBAL VARIABLES ###################################################
 my %nucleotides = ();
 my $pred_msize = 0;
 my $nucl_msize = 0;
 
-for my $file (@ARGV)
+## SCRIPT #############################################################
+FILE: for my $file (@ARGV)
 {
     my %first = (); 
     my %last = (); 
@@ -25,7 +36,7 @@ for my $file (@ARGV)
     my $s = length $file;
     ($s > $pred_msize) ? ($pred_msize = $s) : ();
     
-    while(my $line = <FILE>)
+    LINE: while(my $line = <FILE>)
     {
         if ($line =~ m/\s+CDS\s+/)
         {
@@ -43,12 +54,9 @@ for my $file (@ARGV)
             # Do not sum if the sequence is repeated
             unless(exists($first{$start}) and exists($last{$end}))
             {
-                if ($start >= $end) {
-                    $nucleotides{$file} += $start - $end + 1;
-                }
-                else {
-                    $nucleotides{$file} += $end - $start + 1;
-                }
+                ($start >= $end) ?
+                ($nucleotides{$file} += $start - $end + 1) :
+                ($nucleotides{$file} += $end - $start + 1) ;
             }
             
             # Saving both references in the hashes
@@ -60,7 +68,7 @@ for my $file (@ARGV)
 }
 
 # Process all numbers in a more legible format
-for my $pred (keys %nucleotides)
+NUM: for my $pred (keys %nucleotides)
 {
     # Creates an array with the numeric part of the sentence.
     # The aim is to make more legible numbers
@@ -86,7 +94,7 @@ for my $pred (keys %nucleotides)
     ($s > $nucl_msize) ? ($nucl_msize = $s) : ();
 }
 
-for my $pred (sort keys %nucleotides) {
+PRINT: for my $pred (sort keys %nucleotides) {
     printf "%-*s TOTAL BASES = %*s\n", $pred_msize, $pred, 
                                        $nucl_msize, $nucleotides{$pred};
 }

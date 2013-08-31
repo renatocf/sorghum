@@ -21,21 +21,16 @@ do
     
     # Run myop_iterative for a specific genome
     nice myop-iterative_training.pl \
-        -f ${FASTA_FILE}      \
-        -p ${TRAINING_DIR}    \
-        -i ${N_OF_ITERATIONS} \
-        -o ${OUTPUT_DIR}      \
-        -c ${N_OF_CPUS}       \
-        1> ${LOG_FILE}        \
-        2> ${ERR_FILE}        &
+        -f ${FASTA_FILE}        \
+        -p ${TRAINING_DIR}      \
+        -i ${N_OF_ITERATIONS}   \
+        -o ${OUTPUT_DIR}        \
+        -c ${N_OF_CPUS}         \
+        1> ${LOG_FILE}          \
+        2> ${ERR_FILE}          \
+        && date >> ${DATE_FILE} \
+        || echoerr "Problems while running SGEval" &
     RES=$?
-    
-    # Error message
-    if [ "$RES" -ne "0" ]; 
-        then echoerr "Problems while running SGEval"
-    else
-        date >> ${DATE_FILE}
-    fi
     
     cd .. # Leaves the chromossomes dir.
 done

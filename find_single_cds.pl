@@ -2,7 +2,7 @@
 use v5.10;
 
 #######################################################################
-# Program:    correct_id;pl                                           #
+# Program:    find_single_cds.pl                                      #
 # mantainer:  Renato Cordeiro Ferreira                                #
 # usage:      This program gets .gtf files and prints the amount of   #
 #             single CDS predictions found. The options -a prints     #
@@ -37,11 +37,12 @@ if(scalar(@ARGV) <= 0) {
 }
 
 ## GLOBAL VARIABLES ###################################################
-my $total = 0;
-my $good = 0;
 my $bad = 0;
-my $all_good = 0;
+my $good = 0;
+my $total = 0;
 my $all_bad = 0;
+my $all_good = 0;
+my $all_total = 0;
 
 local $/ = "\n\n";
 
@@ -66,7 +67,7 @@ FILE: for my $file (@ARGV)
     
     LINE: while(my $line = <$FILE>)
     {
-        $total++;
+        $total++; $all_total++;
         my @pred = split("\n", $line);
         # say STDERR "DEBUG:SIZE ==> ", scalar @pred;
         
@@ -80,14 +81,14 @@ FILE: for my $file (@ARGV)
         }
     }
     
-    my $bad_percent = 100*$bad/$total;
-    my $good_percent = 100*$good/$total;
+    my $bad_percent = 100 * $bad/$total;
+    my $good_percent = 100 * $good/$total;
     
     printf 
     "$file:\n".
-    "Single:   $bad (%2.2f%%)\n".
-    "Multiple: $good (%2.2f%%)\n".
-    "Total:    $total\n".
+    "    Single:   $bad (%2.2f%%)\n".
+    "    Multiple: $good (%2.2f%%)\n".
+    "    Total:    $total\n".
     "//\n", 
     $bad_percent, $good_percent;
     
@@ -98,14 +99,14 @@ FILE: for my $file (@ARGV)
 
 if($all)
 {
-    my $bad_percent = 100*$bad/$total;
-    my $good_percent = 100*$good/$total;
+    my $bad_percent = 100 * $all_bad/$all_total;
+    my $good_percent = 100 * $all_good/$all_total;
     
     printf << "REPORT_ALL", $bad_percent, $good_percent;
 all_together:
     Single:   $all_bad (%2.2f%%)
     Multiple: $all_good (%2.2f%%)
-    Total:    $total
+    Total:    $all_total
 //
 REPORT_ALL
 }

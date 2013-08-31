@@ -1,23 +1,22 @@
 #!/bin/bash
 
-FASTA_DIR=../sorghum_data/Sorghum_bicolor.genome
-FASTA_FILE=Sorghum_bicolor.genome.fa
+DATE=$(date +"%Y_%m_%d")
+TRAINING_DIR=/home3/renatocf/sorghum/MYOP/myop_maize_2100/
 
-TRAINING_DIR=../MYOP/myop_maize_2100/
-OUTPUT_DIR=2013_30_04_iterative_training
-
+N_OF_CPUS=1
 N_OF_ITERATIONS=8
-N_OF_CPUS=4
 
-date >> myop_iterative.date
+date > myop_iterative.date
 for i in $(seq -f %02.0f 1 5); 
 do
     cd CHR_${i} # Gets into the chromossomes dir.
     
     LOG_FILE=myop_iterative_chr${i}.log
     ERR_FILE=myop_iterative_chr${i}.err 
-    
     DATE_FILE=myop_iterative_chr${i}.date 
+    FASTA_FILE=CHR_${i}_RefSeq.fasta
+    
+    OUTPUT_DIR=myop_iterative_${DATE}_chr${i}
     date > ${DATE_FILE}
     
     # Run myop_iterative for a specific genome

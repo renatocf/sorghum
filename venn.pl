@@ -58,7 +58,7 @@ FORMAT: foreach (values %hash)
 {
     my $size = 0;
     $size += 4 while(s/(.*)(\d)(\d{3})/$1$2.$3/);
-    $size += 1 + length $1;
+    $size += ($size != 0) ? (1 + length $1) : (length);
     ($size > $num_msize) ? ($num_msize = $size) : ()
 }
 

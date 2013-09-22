@@ -23,10 +23,12 @@ species=maize
 ## AUGUSTUS ############################################################
 for i in $(seq -f %02.0f ${n_chr}); 
 do 
-    # Run augustus for 'n_chr' chromossomes based on species 'species'
+    # Run augustus for 'n_chr' chromossomes based on species 'species',
+    # creating 'start_codon' and 'stop_codon' info for each one
     date > CHR_${i}/augustus_chr${i}.date  \
     &&                                     \
     nice augustus --species=$species       \
+    --start=on --stop=on                   \
     CHR_${i}/CHR_${i}_RefSeq.fasta         \
     1> CHR_${i}/augustus_chr${i}.gtf       \
     2> CHR_${i}/augustus_chr${i}.err       \

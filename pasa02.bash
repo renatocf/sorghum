@@ -2,6 +2,15 @@
 echolog() { echo "$@"; }
 echoerr() { echo "$@" 1>&2; }
 
+#######################################################################
+# Program:    pasa02.bash                                             #
+# mantainer:  Renato Cordeiro Ferreira                                #
+# usage:      Second step of pasa pipeline. Runs pasa over all        #
+#             chromossomes inside their own directories, based on     #
+#             the ESTs generated in step 1.                           #
+# date:       08/07/13 (dd/mm/yy)                                     #
+#######################################################################
+
 ## PREAMBLE ###########################################################
 # Pasa
 PASAHOME=/usr/local/genome/pasa

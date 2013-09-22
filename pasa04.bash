@@ -2,6 +2,14 @@
 echolog() { echo "$@"; }
 echoerr() { echo "$@" 1>&2; }
 
+#######################################################################
+# Program:    pasa04.bash                                             #
+# mantainer:  Renato Cordeiro Ferreira                                #
+# usage:      Fourth step of pasa pipeline. It converts the .gff3     #
+#             to .gtf (the one accepted by SGEval).                   #
+# date:       09/07/13 (dd/mm/yy)                                     #
+#######################################################################
+
 ## PREAMBLE ###########################################################
 N_CHR=10
 ORGANISM=Sb

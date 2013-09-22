@@ -2,6 +2,15 @@
 echolog() { echo "$@"; }
 echoerr() { echo "$@" 1>&2; }
 
+#######################################################################
+# Program:    pasa05.bash                                             #
+# mantainer:  Renato Cordeiro Ferreira                                #
+# usage:      Fifth step of the pasa pipeline. Join all chromossomes  #
+#             in a unique file, correcting the beggining of their     #
+#             ids accordingly to pasa.data.                           #
+# date:       09/07/13 (dd/mm/yy)                                     #
+#######################################################################
+
 ## PREAMBLE ############################################################
 DATE=$(date +"%Y_%m_%d")
 OUTDIR=sgeval_${DATE}

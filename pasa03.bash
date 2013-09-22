@@ -2,6 +2,14 @@
 echolog() { echo "$@"; }
 echoerr() { echo "$@" 1>&2; }
 
+#######################################################################
+# Program:    pasa03.bash                                             #
+# mantainer:  Renato Cordeiro Ferreira                                #
+# usage:      Third step of pasa pipeline. It creates a pasa.gff3,    #
+#             based on the chromoessome genomes with the ESTs.        #
+# date:       08/07/13 (dd/mm/yy)                                     #
+#######################################################################
+
 ## SCRIPT #############################################################
 # Create pasa.gff3 for every chromossome
 for i in $(seq -f %02.0f 10); 

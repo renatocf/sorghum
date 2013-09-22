@@ -2,6 +2,15 @@
 echolog() { echo "$@"; }
 echoerr() { echo "$@" 1>&2; }
 
+#######################################################################
+# Program:    sgeval.bash                                             #
+# mantainer:  Renato Cordeiro Ferreira                                #
+# usage:      Runs sgeval.pl for two predictors (mainly AUGUSTUS and  #
+#             MYOP) against PASA, over the 10 chromossomes. Outputs   #
+#             are put in sgeval_yyyy_mm_dd_chrXX directory.           #
+# date:       26/07/13 (dd/mm/yy)                                     #
+#######################################################################
+
 ## PREAMBLE ############################################################
 DATE=$(date +"%Y_%m_%d")
 PASA_DATE=2013_07_08

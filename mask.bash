@@ -2,6 +2,15 @@
 echolog() { echo "$@"; }
 echoerr() { echo "$@" 1>&2; }
 
+#######################################################################
+# Program:    mask.bash                                               #
+# mantainer:  Renato Cordeiro Ferreira                                #
+# usage:      Runs RepeatMasker, for a certain SPECIES, over the .fa  #
+#             genome files in CHR_xx dirs. The, runs create_map.pl    #
+#             to generate .map files with the masled areas.           #
+# date:       21/04/13 (dd/mm/yy)                                     #
+#######################################################################
+
 PATH_RM=~renatocf/Software/RepeatMasker
 SPECIES=Sorghum bicolor
 

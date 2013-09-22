@@ -91,7 +91,7 @@ given ($predictor)
     when (m/augustus/i) { $/ = $augustus_delim; }
     default 
     {
-        die "gene predictor name not recognized\n"
+        die "gene predictor name not recognized\n",
             "(should be 'augustus' or 'myop'):$predictor\n";
     }
 }

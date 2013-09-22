@@ -105,6 +105,10 @@ foreach my $pred (keys(%hash))
     # the predictor (or all the pasa_intron minus the ones that
     # were predicted by this predictor - def. of False Positive)
     $hash{$pred}{'TN'} = $pasa_intron - $hash{$pred}{'FP'};
+
+    # Stores the numeric values
+    my ($TP, $TN) = ($hash{$pred}{'TP'}, $hash{$pred}{'TN'});
+    my ($FP, $FN) = ($hash{$pred}{'FP'}, $hash{$pred}{'FN'});
     
     # Process all numbers in a more legible format
     foreach (values %{$hash{$pred}})
@@ -114,19 +118,16 @@ foreach my $pred (keys(%hash))
         $size += 1 + length $1;
         ($size > $num_msize) ? ($num_msize = $size) : ()
     }
-
-    my ($TP, $TN) = ($hash{$pred}{'TP'}, $hash{$pred}{'TN'});
-    my ($FP, $FN) = ($hash{$pred}{'FP'}, $hash{$pred}{'FN'});
     
     # Sensibility: True positive / All positives
     # Specificity: True negative / All negatives
-    say "TN==:> $TN\n", "FP==:> $FP";
-    say $hash{$pred}{'sensibility'} = $TP/($TP+$FN); 
-    say $hash{$pred}{'specificity'} = $TN/($TN+$FP); 
+    $hash{$pred}{'sensibility'} = $TP/($TP+$FN); 
+    $hash{$pred}{'specificity'} = $TN/($TN+$FP); 
 }
 
 foreach my $pred (sort keys %hash) 
 {
+    # Stores sensibility and specificity outside the hash
     my $sensibility = delete $hash{$pred}{'sensibility'};
     my $specificity = delete $hash{$pred}{'specificity'};
     

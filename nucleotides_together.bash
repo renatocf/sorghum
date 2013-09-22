@@ -1,6 +1,15 @@
 #!/bin/bash
-echolog() { echo "$@"; } #1>results.txt; }
+echolog() { echo "$@"; }
 echoerr() { echo "$@" 1>&2; }
+
+#######################################################################
+# Program:    nucleotides_together.bash                               #
+# mantainer:  Renato Cordeiro Ferreira                                #
+# usage:      Compares the number of nucleotides from the outputs     #
+#             from MYOP and AUGUSTUS against the numbers predicted    #
+#             by SGEVAL (comparing the predictions made together).    #
+# date:       30/07/13 (dd/mm/yy)                                     #
+#######################################################################
 
 ## PREAMBLE ############################################################
 DATE=2013_07_30

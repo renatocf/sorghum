@@ -1,5 +1,15 @@
 #!/bin/bash
+echolog() { echo "$@"; }
 echoerr() { echo "$@" 1>&2; }
+
+#######################################################################
+# Program:    myop.bash                                               #
+# mantainer:  Renato Cordeiro Ferreira                                #
+# usage:      This program runs a pipeline over all the chromossomes  #
+#             directories to get all the predictions made by the      #
+#             MYOP predictor.                                         #
+# date:       08/07/13 (dd/mm/yy)                                     #
+#######################################################################
 
 ## PREAMBLE ############################################################
 myop=/home/yoshiaki/myop/scripts/myop-predict.pl 

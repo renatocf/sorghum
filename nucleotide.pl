@@ -50,30 +50,12 @@ LINE: while(my $line = <>)
     print STDERR "\n";
 }
 
-NUM: for my $key (keys(%hash))
+NUM: foreach (values %hash)
 {
-    # Creates an array with the numeric part of the sentence.
-    # The aim is to make more legible numbers
-    my @num = split("", $hash{$key});
-    my $size = scalar @num;
-    
-    # Last digit multiple of 3
-    my $dif = $size % 3;
-    
-    # Prints untill reaches the last digit multiple of 3
-    # and, then, to each multiple, prints a '.'
-    # E.g. 31415 - the last multiple is 4 and it prints 31,
-    #              then puts a '.' and prints 415
-    $hash{$key} = "";
-    for(my $j = -$dif, my $i = 0; $i != $size; $i++, $j++) 
-    { 
-        $hash{$key} .= "." unless( ($j % 3) > 0 || !$i );
-        $hash{$key} .= "$num[$i]"; 
-    }
-    
-    # Takes the biggest size of the numbers to print it later
-    my $s = length $hash{$key};
-    ($s > $num_msize) ? ($num_msize = $s) : ();
+    my $size = 0; 
+    $size += 4 while(s/(.*)(\d)(\d{3})/$1$2.$3/);
+    $size += ($size != 0) ? (1 + length $1) : (length);
+    ($size > $num_msize) ? ($num_msize = $size) : ()
 }
 
 PRINT: for my $key (sort keys %hash) 

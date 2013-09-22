@@ -69,30 +69,12 @@ FILE: for my $file (@ARGV)
 }
 
 # Process all numbers in a more legible format
-NUM: for my $pred (keys %nucleotides)
+NUM: foreach (values %nucleotides)
 {
-    # Creates an array with the numeric part of the sentence.
-    # The aim is to make more legible numbers
-    my @num = split("", $nucleotides{$pred});
-    my $size = scalar @num;
-    
-    # Last digit multiple of 3
-    my $dif = $size % 3;
-    
-    # Prints untill reaches the last digit multiple of 3
-    # and, then, to each multiple, prints a '.'
-    # E.g. 31415 - the last multiple is 4 and it prints 31,
-    #              then puts a '.' and prints 415
-    $nucleotides{$pred} = "";
-    for(my $j = -$dif, my $i = 0; $i != $size; $i++, $j++) 
-    { 
-        $nucleotides{$pred} .= "." unless( ($j % 3) > 0 || !$i );
-        $nucleotides{$pred} .= "$num[$i]"; 
-    }
-    
-    # Takes the biggest size of the numbers to print it later
-    my $s = length $nucleotides{$pred};
-    ($s > $nucl_msize) ? ($nucl_msize = $s) : ();
+    my $size = 0;
+    $size += 4 while(s/(.*)(\d)(\d{3})/$1$2.$3/);
+    $size += ($size != 0) ? (1 + length $1) : (length);
+    ($size > $nucl_msize) ? ($nucl_msize = $size) : ()
 }
 
 PRINT: for my $pred (sort keys %nucleotides) {

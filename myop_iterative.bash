@@ -1,4 +1,15 @@
 #!/bin/bash
+echolog() { echo "$@"; }
+echoerr() { echo "$@" 1>&2; }
+
+#######################################################################
+# Program:    myop_iterative.bash                                     #
+# mantainer:  Renato Cordeiro Ferreira                                #
+# usage:      This program runs an iterative version of myop over     #
+#             all chromossomes, putting the results inside specific   #
+#             directories created by myop-iteractive_training.pl      #
+# date:       08/07/13 (dd/mm/yy)                                     #
+#######################################################################
 
 DATE=$(date +"%Y_%m_%d")
 TRAINING_DIR=/home3/renatocf/sorghum/MYOP/myop_maize_2100/
@@ -7,7 +18,7 @@ N_OF_CPUS=1
 N_OF_ITERATIONS=8
 
 date > myop_iterative.date
-for i in $(seq -f %02.0f 1 5); 
+for i in $(seq -f %02.0f 1 1); 
 do
     cd CHR_${i} # Gets into the chromossomes dir.
     

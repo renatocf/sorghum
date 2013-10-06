@@ -20,7 +20,7 @@ echolog
 
 for i in $(seq -f %02.0f ${n_chr}); 
 do
-    DATE=2013_07_30
+    DATE=2013_09_22
     MYOP=myop_chr${i}.gtf.clean.new 
     AUGUSTUS=augustus_chr${i}.gtf.clean.new 
     VENN=nucleotide_exon_with_intron_partial_venn.txt 

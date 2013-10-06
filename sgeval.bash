@@ -23,7 +23,7 @@ date > sgeval.date
 echolog "Running sgeval for each chromossome alone"
 
 # Runs SGEval for 2 predictors (MYOP and AUGUSTUS)
-for i in $(seq -f %02.0f 1 5); 
+for i in $(seq -f %02.0f 6 10); 
 do
     PASA_PATH=.
     PASA_FILE=Sb_${PASA_DATE}_chr${i}_pasa.gtf
@@ -35,26 +35,22 @@ do
     PRD2_FILE=myop_chr${i}.gtf.clean.new
 
     cd CHR_${i} # Gets into the chromossomes dir.
-    date > sgeval_${DATE}_chr${i}.date
     
     # Creates a sgeval results file
     OUTDIR=sgeval_${DATE}_chr${i}
     mkdir -p ${OUTDIR}
     
-    nice sgeval.pl -o ${OUTDIR} \
-        -g ${PASA_PATH}/${PASA_FILE} \
-        ${PRD1_PATH}/${PRD1_FILE} \
-        ${PRD2_PATH}/${PRD2_FILE} \
+    # Runs SGEval for each chromossome specified
+    date > sgeval_${DATE}_chr${i}.date           \
+    &&                                           \
+    nice sgeval.pl -o ${OUTDIR}                  \
+        -g ${PASA_PATH}/${PASA_FILE}             \
+        ${PRD1_PATH}/${PRD1_FILE}                \
+        ${PRD2_PATH}/${PRD2_FILE}                \
         1> ${OUTDIR}/sgeval_analysis_${DATE}.log \
-        2> ${OUTDIR}/sgeval_analysis_${DATE}.err &
-    RES=$?
-
-    # Error message
-    if [ "$RES" -ne "0" ]; 
-        then echoerr "Problems while running SGEval"
-    else
-        date >> sgeval_${DATE}_chr${i}.date
-    fi
+        2> ${OUTDIR}/sgeval_analysis_${DATE}.err \
+    &&                                           \
+    date >> sgeval_${DATE}_chr${i}.date          &
     
     # Ends creating the output dir
     mv sgeval_${DATE}_chr${i}.date ${OUTDIR}

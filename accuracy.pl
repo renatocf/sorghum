@@ -39,6 +39,10 @@ while(my $line = <>)
     my @fields = split(/\|/, $name);
     my $p_exon = 0; my $p_intron = 0;
     
+    # If there is pasa exon, it will add in the quantity
+    # of TRUE POSITIVE for a given predictor (ignoring 
+    # if there is pasa_intron). Otherwise, we sum the
+    # values as being an error.
     if($name =~ m/pasa([^_]|$)/) { 
         $p_exon = 1; 
         $pasa += $quantity;
@@ -59,6 +63,10 @@ while(my $line = <>)
         # DEBUG: print the field
         print STDERR "  field ==> $field\n";
         
+        # To any field that is not pasa or pasa_intron,
+        # sum to TRUE POSITIVES or FALSE POSITIVES as 
+        # there we identified the presence of pasa_exon
+        # or pasa_intron.
         unless($field =~ /pasa/ or $field =~ /pasa_intron/)
         {
             if($p_exon)

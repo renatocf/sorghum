@@ -3,7 +3,7 @@ package main;
 use v5.10;
 
 #######################################################################
-# Program:    correct_id;pl                                           #
+# Program:    correct_id.pl                                           #
 # mantainer:  Renato Cordeiro Ferreira                                #
 # usage:      This program gets a .gtf file and change its gene and   #
 #             transcript ids to avoid problems with them. Useful      #

@@ -8,7 +8,7 @@ use v5.10;
 # usage:      This program gets the output of venn.pl and calculates  #
 #             some statiscical information about it (TP. TN, FP, FN,  #
 #             accuracy and specificity).
-# date:       25/07/13 (dd/mm/yy)                                     #
+# date:       13/10/13 (dd/mm/yy)                                     #
 #######################################################################
 
 # Pragmas
@@ -29,9 +29,9 @@ while(my $line = <>)
     chomp $line; # Takes out \n
     
     (my $name, my $quantity) = split(/=>/, $line);
-    $name =~ s/ //g;      # Taking out spaces
-    $quantity =~ s/ //g;  # Taking out spaces
-    $quantity =~ s/\.//g; # Taking out dots
+    $name =~ s/ //g;     # Taking out spaces
+    $quantity =~ s/ //g; # Taking out spaces
+    $quantity =~ s/_//g; # Taking out underscores
     
     # DEBUG: print the complete sentence
     say STDERR "SENTENCE ==> $name";
@@ -49,13 +49,6 @@ while(my $line = <>)
         
         # DEBUG: print pasa exon added quantity
         say STDERR "  pasa exon: +$quantity";
-    } 
-    elsif($name =~ m/pasa_intron/) { 
-        $p_intron = 1; 
-        $pasa_intron += $quantity;
-        
-        # DEBUG: print pasa_intron added quantity
-        say STDERR "  pasa intron: +$quantity";
     } 
     
     foreach my $field (@fields)
@@ -77,7 +70,7 @@ while(my $line = <>)
                 $hash{$field}{'TP'} += $quantity;
                 print STDERR "    ($field) TP: +$quantity\n";
             }
-            if($p_intron)
+            else
             {    
                 # FP: False positive
                 # Everything that is pasa_intron, not in pasa
@@ -85,11 +78,11 @@ while(my $line = <>)
                 $hash{$field}{'FP'} += $quantity;
                 print STDERR "    ($field) FP: +$quantity\n";
             }
-        } # unless
         
-        # Takes the biggest size of the keys to print it later
-        my $s = length $field;
-        ($s > $key_msize) ? ($key_msize = $s) : ();
+            # Takes the biggest size of the keys to print it later
+            my $s = length $field;
+            ($s > $key_msize) ? ($key_msize = $s) : ();
+        } # unless
         
     } #foreach pred
     
@@ -107,49 +100,57 @@ foreach my $pred (keys(%hash))
     # the preditor (or all the pasa exon minus the ones that 
     # were predicted by this predictor - def. of True Positive)
     $hash{$pred}{'FN'} = $pasa - $hash{$pred}{'TP'};
-    
-    # TN: True negative
-    # Everything that is pasa_intron but was not predicted by 
-    # the predictor (or all the pasa_intron minus the ones that
-    # were predicted by this predictor - def. of False Positive)
-    $hash{$pred}{'TN'} = $pasa_intron - $hash{$pred}{'FP'};
 
     # Stores the numeric values
-    my ($TP, $TN) = ($hash{$pred}{'TP'}, $hash{$pred}{'TN'});
-    my ($FP, $FN) = ($hash{$pred}{'FP'}, $hash{$pred}{'FN'});
+    my $TP = $hash{$pred}{'TP'}; 
+    my $FP = $hash{$pred}{'FP'};
+    my $FN = $hash{$pred}{'FN'};
+    
+    # Total of predicted nucleotides
+    $hash{$pred}{'predicted'} = $TP+$FP;
     
     # Process all numbers in a more legible format
     foreach (values %{$hash{$pred}})
     {
         my $size = 0;
-        $size += 4 while(s/(.*)(\d)(\d{3})/$1$2.$3/);
+        $size += 4 while(s/(.*)(\d)(\d{3})/$1$2_$3/);
         $size += ($size != 0) ? (1 + length $1) : (length);
         ($size > $num_msize) ? ($num_msize = $size) : ()
     }
     
-    # Sensibility: True positive / All positives
-    # Specificity: True negative / All negatives
-    $hash{$pred}{'sensibility'} = $TP/($TP+$FN); 
-    $hash{$pred}{'specificity'} = $TN/($TN+$FP); 
+    # Sensitivity: True positive / All positives
+    # PPV:         True positive / All predicted
+    # F:           2*[(PPV*sensitivity)/(PPV+sensitivity)]
+    my $sen = $hash{$pred}{'sensitivity'} = $TP/($TP+$FN);
+    my $ppv = $hash{$pred}{'ppv'}         = $TP/($TP+$FP);
+    my $f   = $hash{$pred}{'f'}           = 2*($sen*$ppv)/($sen+$ppv);
 }
 
 foreach my $pred (sort keys %hash) 
 {
-    # Stores sensibility and specificity outside the hash
-    my $sensibility = delete $hash{$pred}{'sensibility'};
-    my $specificity = delete $hash{$pred}{'specificity'};
+    # Stores sensitivity and specificity outside the hash
+    my $sensitivity = delete $hash{$pred}{'sensitivity'};
+    my $predicted   = delete $hash{$pred}{'predicted'};
+    my $ppv         = delete $hash{$pred}{'ppv'};
+    my $f           = delete $hash{$pred}{'f'};
     
-    print "$pred\n";
+    # Predictor's name and predicted value
+    printf "%-*s   %*s\n", $key_msize, $pred, 
+                           $num_msize, $predicted;
+    
     foreach my $key (keys %{$hash{$pred}})
     {
         # Prints all the keys in the following format:
         # pred nucleotides = 23.543.354.134
-        printf "  %-*s => %*s\n", 11, $key, 
-                                  $num_msize, $hash{$pred}{$key};
+        printf "    %-*s => %*s\n", 11, $key, 
+                                    $num_msize, $hash{$pred}{$key};
     }
-    printf "  %s => %*g (%2.2d%%)\n", "sensibility", $num_msize, 
-                                       $sensibility, $sensibility*100;
-    printf "  %s => %*g (%2.2d%%)\n", "specificity", $num_msize, 
-                                       $specificity, $specificity*100;
+    
+    printf "    %s => %*.7g\n", "PPV        ", $num_msize, 
+                                $ppv*100;
+    printf "    %s => %*.7g\n", "Sensitivity", $num_msize, 
+                                $sensitivity*100;
+    printf "    %s => %*.7g\n", "F          ", $num_msize, 
+                                $f*100;
     print "//\n"
 }

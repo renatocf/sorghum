@@ -17,6 +17,22 @@ VENN=nucleotide_exon_with_intron_partial_venn.txt
 DIR=CHR_*/sgeval_${DATE}_chr*
 
 ## SCRIPT #############################################################
+echolog "== NUCLEOTIDES =============================================="
+echolog
 perl venn.pl ${DIR}/${VENN} 
 echolog
 perl venn.pl ${DIR}/${VENN} | perl accuracy.pl 2> /dev/null
+
+echolog
+echolog "== EXON ====================================================="
+echolog
+perl venn.pl ${DIR}/nucleotide_exon_venn.txt
+echolog
+perl venn.pl ${DIR}/nucleotide_exon_venn.txt | perl accuracy.pl 2> /dev/null
+
+echolog
+echolog "== GENE ====================================================="
+echolog
+perl venn.pl ${DIR}/gene_exact_venn.txt
+echolog
+perl venn.pl ${DIR}/gene_exact_venn.txt | perl accuracy.pl 2> /dev/null

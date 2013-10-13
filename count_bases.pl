@@ -72,7 +72,7 @@ FILE: for my $file (@ARGV)
 NUM: foreach (values %nucleotides)
 {
     my $size = 0;
-    $size += 4 while(s/(.*)(\d)(\d{3})/$1$2.$3/);
+    $size += 4 while(s/(.*)(\d)(\d{3})/$1$2_$3/);
     $size += ($size != 0) ? (1 + length $1) : (length);
     ($size > $nucl_msize) ? ($nucl_msize = $size) : ()
 }

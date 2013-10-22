@@ -17,7 +17,7 @@ echoerr() { echo "$@" 1>&2; }
 DATE=2013_09_22
 DIR=CHR_*/sgeval_${DATE}_chr*
 NUCL=nucleotide_exon_with_intron_partial_venn.txt 
-EXON=nucleotide_exon_venn.txt
+EXON=exon_exact_venn.txt
 GENE=gene_exact_venn.txt
 
 ## SCRIPT #############################################################

@@ -32,7 +32,7 @@ do
     PRD1_FILE=augustus_chr${i}.gtf.clean.new
 
     PRD2_PATH=.
-    PRD2_FILE=myop_chr${i}.gtf.clean.new
+    PRD2_FILE=myop_chr${i}.gtf.clean.new.cor
 
     cd CHR_${i} # Gets into the chromossomes dir.
     
@@ -40,20 +40,17 @@ do
     OUTDIR=sgeval_${DATE}_chr${i}
     mkdir -p ${OUTDIR}
     
-    # Runs SGEval for each chromossome specified
-    date > sgeval_${DATE}_chr${i}.date           \
-    &&                                           \
-    nice sgeval.pl -o ${OUTDIR}                  \
-        -g ${PASA_PATH}/${PASA_FILE}             \
-        ${PRD1_PATH}/${PRD1_FILE}                \
-        ${PRD2_PATH}/${PRD2_FILE}                \
-        1> ${OUTDIR}/sgeval_analysis_${DATE}.log \
-        2> ${OUTDIR}/sgeval_analysis_${DATE}.err \
-    &&                                           \
-    date >> sgeval_${DATE}_chr${i}.date          &
-    
-    # Ends creating the output dir
-    mv sgeval_${DATE}_chr${i}.date ${OUTDIR}
+    # Runs SGEval for each chromossome specified 
+    date > ${OUTDIR}/sgeval_${DATE}_chr${i}.date  \
+    &&                                            \
+    nice sgeval.pl -o ${OUTDIR}                   \
+        -g ${PASA_PATH}/${PASA_FILE}              \
+        ${PRD1_PATH}/${PRD1_FILE}                 \
+        ${PRD2_PATH}/${PRD2_FILE}                 \
+        1> ${OUTDIR}/sgeval_analysis_${DATE}.log  \
+        2> ${OUTDIR}/sgeval_analysis_${DATE}.err  \
+    &&                                            \
+    date >> ${OUTDIR}/sgeval_${DATE}_chr${i}.date &
     
     cd .. # Leaves the chromossomes dir.
 done

@@ -1,5 +1,4 @@
 #!/usr/bin/perl
-package main;
 use v5.10;
 
 # Pragmas
@@ -51,14 +50,14 @@ my $db    = Bio::DB::Fasta->new ("$fasta");
 my $seqio = Bio::SeqIO->new ('-format' => 'Fasta', 
                               -fh => \*STDOUT);
 
-# Open corrected with correted predictions
-open GTF_COR, ">", "$gtf_file.cor";
-
+# Counter for number of chromossomes
+# to be corrected
 my $WRONGS = 0;
 
 # Get one entire gene
 GENE: for my $gene (@{$genes}) 
 {
+    # Get sequence name
     my $source = $gene->seqname();
     
     # Get one transcript of the gene
@@ -73,7 +72,7 @@ GENE: for my $gene (@{$genes})
             
             if($start < 0) 
             {
-                while($start <0) { $start += 3;} 
+                while($start < 0) { $start += 3;} 
             }
             
             # Get sequence from the database
@@ -103,9 +102,9 @@ GENE: for my $gene (@{$genes})
         close TMP;
         
         # Pass transeq over .fa
-        qx(transeq /tmp/trans.fa -outseq /tmp/trans.pep 
-            2>/dev/null);
+        qx(transeq /tmp/trans.fa -outseq /tmp/trans.pep 2>/dev/null);
         
+        # Read .pep file and get its info
         open(TMP, "<", "/tmp/trans.pep");
         <TMP>; # Take out header
         my $pep = "";
@@ -116,158 +115,109 @@ GENE: for my $gene (@{$genes})
         }
         close TMP;
         
-        say STDERR "\n==:> ORIGINAL GTF";
-        say STDERR $pep;
-        
-        my $length = 0;
-        if($pep =~ /\*/)
+        if($pep !~ /\*/)
         {
-            say STDERR "\n==:> NEEDS CORRECTION";
-            say STDERR "PEP_COR: ", substr($pep, 0, length $`);
-            say STDERR "length:  ", length($`);
-            say STDERR "SEQ_COR: ", substr($seq, 0, 3 * length($`));
-            say STDERR "length:  ", 3*length($`);
-            
-            $seq = substr($seq, 0, 3 * length($`));
-            $length = 3*length($`);
-            $WRONGS++;
+            # If there is no stop codon in 
+            # the middle of the gene, just
+            # print it and go to the next
+            $gene->output_gtf(\*STDOUT);
+            next GENE;
         }
-        else { $gene->output_gtf(\*GTF_COR); }
         
-        # Output sequence untill first *
-        my $seqobj = Bio::PrimarySeq->new(
-            -seq => $seq, -alphabet =>'dna', -id => $tx->id()
-        );
-        
-        $seqio->write_seq($seqobj);
-        
-        # No *, do nothing else
-        next GENE if($pep !~ /\*/);
-        
-        # Make corrections on each gene
-        say STDERR "\n==:> CORRECTING";
+        # Count another wrong chrs and
+        # store its right part length
+        $WRONGS++;
+        my $length = 3*length($`);
         
         # Reverse strand
-        if($gene->strand eq "-") 
+        my @final; 
+        if($gene->strand eq "-")
         {
-            my $size = 0; my $last = 0; my @final;
+            # Put the start codon in the list of 
+            # corrected transcripts
+            for my $start (@{$tx->start_codons()})
+            {
+                push @final, $start;
+            }
+            
+            # Run through the CDS untill achieve the maximum
+            # number of nucleotides calculated above
+            my $last = 0;
             COR: for my $cds (reverse @{$tx->cds()}) 
             {
                 my $size = $cds->length();
-                say STDERR "-------------";
-                say STDERR "CDS size: ", $size;
                 
                 # Finishes loop iff pass by a stop codon
                 if($last+$size >= $length)
                 {
-                    say STDERR "[1]: LAST:      ", $last;
-                    say STDERR "[2]: LENGTH:    ", $length;
-                    say STDERR "[3]: [2]-[1]-1: ", $length-$last-1;
-                    say STDERR "$size";
-                    
-                    say STDERR "LENGTH-LAST-1: ", $length-$last-1;
-                    say STDERR "LENGTH-LAST-1: ", $cds->start() +$length-$last-1;
-                    say STDERR "CDS END:     ", $cds->stop();
                     $cds->set_start($cds->stop() - ($length-$last-1));
-                    $cds->output_gtf(\*STDERR);
-                    # $cds->output_gtf(\*GTF_COR);
-                    
                     $last = $cds->start();
-                    
-                    unshift @final, $cds;
+                    push @final, $cds;
                     last COR;
                 }
                 
                 # Otherwise, update counter and prints sequence
                 $last += $size;
-                say STDERR "Count   : ", $last;
-                $cds->output_gtf(\*STDERR);
-                # $cds->output_gtf(\*GTF_COR);
-                unshift @final, $cds;
+                push @final, $cds;
             }
-            say STDERR "Last: ", $last;
             
+            # Correct the stop codon
             for my $stop (@{$tx->stop_codons()})
             {
                 $stop->set_start  ($last - 3);
                 $stop->set_stop   ($last - 1);
-                $stop->output_gtf(\*STDERR);
-                unshift @final, $stop;
-                # $stop->output_gtf(\*GTF_COR);
+                push @final, $stop;
             }
             
-            for my $start (@{$tx->start_codons()})
-            {
-                # $start->set_start  ($last-2);
-                # $start->set_stop   ($last);
-                # $start->output_gtf (\*GTF_COR);
-                # $start->output_gtf (\*STDERR);
-                push @final, $start;
-            }
-            
-            say STDERR "=======================";
-            map { $_->output_gtf(\*STDERR); $_->output_gtf(\*GTF_COR); } @final;
-            print GTF_COR "\n";
+            # Print the reverse strand gene
+            map { $_->output_gtf(\*STDOUT); } reverse @final;
+            print STDOUT "\n";
         }
         # Normal strand
         else 
         {
+            # Put the start codon in the list of 
+            # corrected transcripts
             for my $start (@{$tx->start_codons()})
             {
-                $start->output_gtf(\*STDERR);
-                $start->output_gtf(\*GTF_COR);
+                push @final, $start;
             }
             
-            my $size = 0; my $last = 0;
+            # Run through the CDS untill achieve the maximum
+            # number of nucleotides calculated above
+            my $last = 0;
             COR: for my $cds (@{$tx->cds()}) 
             {
                 my $size = $cds->length();
-                say STDERR "-------------";
-                say STDERR "CDS size: ", $size;
                 
                 # Finishes loop iff pass by a stop codon
                 if($last+$size >= $length)
                 {
-                    say STDERR "[1]: LAST:      ", $last;
-                    say STDERR "[2]: LENGTH:    ", $length;
-                    say STDERR "[3]: [2]-[1]-1: ", $length-$last-1;
-                    say STDERR "$size";
-                    
-                    say STDERR "LENGTH-LAST-1: ", $length-$last-1;
-                    say STDERR "LENGTH-LAST-1: ", $cds->start() +$length-$last-1;
-                    say STDERR "CDS END:       ", $cds->stop();
                     $cds->set_stop($cds->start() + $length-$last-1);
-                    $cds->output_gtf(\*STDERR);
-                    $cds->output_gtf(\*GTF_COR);
-                    
                     $last = $cds->stop();
+                    push @final, $cds;
                     last COR;
                 }
                 
                 # Otherwise, update counter and prints sequence
                 $last += $size;
-                say STDERR "Count   : ", $last;
-                $cds->output_gtf(\*STDERR);
-                $cds->output_gtf(\*GTF_COR);
+                push @final, $cds;
             }
-            say STDERR "Last: ", $last;
             
+            # Correct the stop codon
             for my $stop (@{$tx->stop_codons()})
             {
                 $stop->set_start  ($last + 1);
                 $stop->set_stop   ($last + 3);
-                $stop->output_gtf (\*GTF_COR);
-                $stop->output_gtf (\*STDERR);
-                print GTF_COR "\n";
+                push @final, $stop;
             }
+            
+            # Print the normal strand gene
+            map { $_->output_gtf(\*STDOUT); } @final;
+            print STDOUT "\n";
         }
-        say STDERR "GENE START:  ", $gene->start();
-        say STDERR "GENE STOP:   ", $gene->stop();
-        say STDERR "GENE LENGTH: ", $gene->length();
     }
 }
 
-# Close gtf file with all info
-close GTF_COR;
-
-say STDERR $WRONGS;
+say STDERR "\n=======================================";
+say STDERR "NUMBER OF CHROMOSSOMES CORRECTED: $WRONGS";

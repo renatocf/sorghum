@@ -19,15 +19,15 @@ use warnings;
 local $/ = ">";
 <>;
 
-FASTA: while ($single_fasta = <>)
+FASTA: while (my $single_fasta = <>)
 {
     # Takes out '>'
     chomp($single_fasta);
     
     # Takes out header
-    @lines = split("\n" , $single_fasta);
-    $header = shift(@lines);
-    $res = join("", @lines);
+    my @lines = split("\n" , $single_fasta);
+    my $header = shift(@lines);
+    my $res = join("", @lines);
     
     # Prints SHORT in STDERR and LONG in STDOUT
     if ($res =~ m/\*/) { say STDERR ">$header SHORT\n$res"; }
